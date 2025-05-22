@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Members - Ithihad Friends</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Members Page Specific Styles */
+        .members-hero {
+            height: 60vh;
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .members-hero-content {
+            z-index: 2;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .members-hero h1 {
+            font-size: 4rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #4a90e2;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: #2c2c2c;
+            color: #e0e0e0;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+            transform: scale(1.02);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a90e2;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .search-icon:hover {
+            color: #ff6b6b;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid #4a90e2;
+            border-radius: 20px;
+            background: #2c2c2c;
+            color: #a0a0a0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--gradient);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .members-container {
+            padding: 60px 5%;
+            background: #0d0d0d;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .member-profile {
+            background: #1e1e1e;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .member-profile:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .member-profile img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid #4a90e2;
+        }
+
+        .member-profile h3 {
+            font-size: 1.3rem;
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .member-profile .role {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .member-details {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            margin: 10px 0;
+        }
+
+        .member-details p {
+            margin: 5px 0;
+        }
+
+        .member-social {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .member-social a {
+            color: #fff;
+            background: #4a90e2;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .member-social a:hover {
+            background: #ff6b6b;
+            transform: scale(1.1);
+        }
+
+        .member-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #00ff00;
+            border: 2px solid #1e1e1e;
+        }
+
+        .member-status.offline {
+            background: #ff0000;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #a0a0a0;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .members-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-bar {
+                padding: 12px 45px 12px 15px;
+            }
+
+            .members-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .filter-options {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .members-hero {
+                height: 50vh;
+            }
+
+            .members-hero h1 {
+                font-size: 2rem;
+            }
+
+            .filter-btn {
+                padding: 6px 15px;
+                font-size: 0.8rem;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="wrrrrrrrrrrrrrrr.svg" alt="" style="width: 40px; height: auto;">
+        </div>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#committee">Core Committee</a></li>
+            <li><a href="index.html#events">Events & Programs</a></li>
+            <li><a href="index.html#gallery">Gallery</a></li>
+            <li><a href="members.html" class="active">Members</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+        <div class="overlay"></div>
+    </nav>
+
+    <!-- Members Hero Section -->
+    <section class="members-hero">
+        <div class="members-hero-content">
+            <h1>Our Members</h1>
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search members by name or role...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn">Core Committee</button>
+                <button class="filter-btn">Media Wing</button>
+                <button class="filter-btn">Language Wings</button>
+                <button class="filter-btn">Other Wings</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Members Container -->
+    <section class="members-container">
+        <div class="members-grid" id="membersGrid">
+            <!-- Members will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Ithihad Friends - All rights reserved.</p>
+        <div class="social-links">
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Members data
+        const membersData = [
+             
+             { id: 34, name: "Sibhathulla", role: "Translator", wing: "Arabic Wing", category: "language", image: "photos/sibhathulla.jpg", email: "nahid@example.com", phone: "+91 1234567896", status: "online" },
+            { id: 4, name: "Shahul Kp", role: "Media Lead", wing: "Media Wing", category: "media", image: "photos/shahul.jpg", email: "shahul@example.com", phone: "+91 1234567893", status: "online" },
+            { id: 1, name: "Mishab", role: "President", wing: "Core Committee", category: "core", image: "photos/mishab.jpg", email: "mishab@example.com", phone: "+91 1234567890", status: "online" },
+            { id: 2, name: "Arif", role: "Secretary", wing: "Core Committee", category: "core", image: "photos/arif.jpg", email: "arif@example.com", phone: "+91 1234567891", status: "online" },
+            { id: 3, name: "Rizwan", role: "Treasurer", wing: "Core Committee", category: "core", image: "photos/riswan.jpg", email: "rizwan@example.com", phone: "+91 1234567892", status: "online" },
+            { id: 5, name: "khaleel", role: "Media Lead", wing: "Media Wing", category: "media", image: "photos/khaleel.jpg", email: "hashim@example.com", phone: "+91 1234567894", status: "online" },
+            { id: 6, name: "Hashim P", role: "Editor", wing: "Publishing Bureau", category: "other", image: "photos/hashim.jpg", email: "hashim@example.com", phone: "+91 1234567894", status: "online" },
+            { id: 7, name: "Mubarak", role: "Designer", wing: "Publishing Bureau", category: "other", image: "photos/mubarak.jpg", email: "mubarak@example.com", phone: "+91 1234567895", status: "online" },
+            { id: 8, name: "shahabas", role: "Arabic Lead", wing: "Arabic Wing", category: "language", image: "photos/shabas.jpg", email: "arif@example.com", phone: "+91 1234567891", status: "online" },
+            { id: 9, name: "Nahid", role: "Translator", wing: "Arabic Wing", category: "language", image: "photos/nahid.jpg", email: "nahid@example.com", phone: "+91 1234567896", status: "online" },
+            { id: 10, name: "Musthafa K", role: "English Lead", wing: "English Wing", category: "language", image: "photos/musthafa 1.jpg", email: "musthafa@example.com", phone: "+91 1234567897", status: "online" },
+            { id: 11, name: "Shammas", role: "Content Writer", wing: "English Wing", category: "language", image: "photos/shammas.jpg", email: "shammas@example.com", phone: "+91 1234567898", status: "online" },
+            { id: 12, name: "Nujoom", role: "Urdu Lead", wing: "Urdu Wing", category: "language", image: "photos/nujoom.jpg", email: "nujoom@example.com", phone: "+91 1234567899", status: "online" },
+            { id: 13, name: "Shifan", role: "Poet", wing: "Urdu Wing", category: "language", image: "photos/SHIFAN.jpg", email: "shifan@example.com", phone: "+91 1234567800", status: "online" },
+            { id: 14, name: "Ashiq", role: "Malayalam Lead", wing: "Malayalikkootam", category: "language", image: "photos/photo_43_2024-10-13_23-02-46.jpg", email: "ashiq@example.com", phone: "+91 1234567801", status: "online" },
+            { id: 15, name: "Sabeel", role: "Storyteller", wing: "Malayalikkootam", category: "language", image: "photos/sabeel.jpg", email: "sabeel@example.com", phone: "+91 1234567802", status: "online" },
+            { id: 16, name: "Raifan", role: "Librarian", wing: "Library Board", category: "other", image: "photos/RAIFAN.jpg", email: "raifan@example.com", phone: "+91 1234567803", status: "online" },
+            { id: 17, name: "Irfan", role: "Archivist", wing: "Library Board", category: "other", image: "photos/photo_51_2024-10-13_23-02-46.jpg", email: "irfan@example.com", phone: "+91 1234567804", status: "online" },
+            { id: 18, name: "Fabin", role: "Quiz Master", wing: "GK Wing", category: "other", image: "photos/febin.jpg", email: "fabin@example.com", phone: "+91 1234567805", status: "online" },
+            { id: 19, name: "Swalih K", role: "Researcher", wing: "GK Wing", category: "other", image: "photos/swalih 1.jpg", email: "swalih@example.com", phone: "+91 1234567806", status: "online" },
+            { id: 20, name: "Ajsal", role: "Coordinator", wing: "PKV", category: "other", image: "photos/ajsal.jpg", email: "ajsal@example.com", phone: "+91 1234567807", status: "online" },
+            { id: 21, name: "anfad", role: "Event Planner", wing: "PKV", category: "other", image: "photos/anfad.jpg", email: "mishab@example.com", phone: "+91 1234567890", status: "online" },
+            { id: 22, name: "Adnan", role: "Artist", wing: "Art Wing", category: "other", image: "photos/adnan.jpg", email: "adnan@example.com", phone: "+91 1234567808", status: "online" },
+            { id: 23, name: "Shameem", role: "Illustrator", wing: "Art Wing", category: "other", image: "photos/shameem.jpg", email: "rizwan@example.com", phone: "+91 1234567892", status: "online" },
+            { id: 24, name: "Sinan.k", role: "Treasurer", wing: "Core Committee", category: "core", image: "photos/sinan.jpg", email: "rizwan@example.com", phone: "+91 1234567892", status: "online" },
+            { id: 25, name: "Nihad", role: "Media Lead", wing: "Media Wing", category: "media", image: "photos/nihad.jpg", email: "shahul@example.com", phone: "+91 1234567893", status: "online" },
+            { id: 26, name: "Musthafa.m", role: "Media Lead", wing: "Media Wing", category: "media", image: "photos/musthafa.jpg", email: "hashim@example.com", phone: "+91 1234567894", status: "online" },
+            { id: 27, name: "Naeem", role: "Editor", wing: "Publishing Bureau", category: "other", image: "photos/naeem.jpg", email: "hashim@example.com", phone: "+91 1234567894", status: "online" },
+            { id: 28, name: "Hisham", role: "Designer", wing: "Publishing Bureau", category: "other", image: "photos/HISHAM.jpg", email: "mubarak@example.com", phone: "+91 1234567895", status: "online" },
+            { id: 29, name: "sinan.pp", role: "Arabic Lead", wing: "Arabic Wing", category: "language", image: "photos/sinanpp.jpg", email: "arif@example.com", phone: "+91 1234567891", status: "online" },
+            { id: 30, name: "Hashir Thangal", role: "Translator", wing: "Arabic Wing", category: "language", image: "photos/hashirT.png", email: "nahid@example.com", phone: "+91 1234567896", status: "online" },
+            { id: 31, name: "Swalih.ck", role: "English Lead", wing: "English Wing", category: "language", image: "photos/ck.jpg", email: "musthafa@example.com", phone: "+91 1234567897", status: "online" },
+            { id: 32, name: "Arshad", role: "Content Writer", wing: "English Wing", category: "language", image: "photos/arshad.jpg", email: "shammas@example.com", phone: "+91 1234567898", status: "online" },
+            { id: 34, name: "Nahid", role: "Translator", wing: "Arabic Wing", category: "language", image: "photos/nahid.jpg", email: "nahid@example.com", phone: "+91 1234567896", status: "online" },
+        { id: 34, name: "Ruvaid", role: "Translator", wing: "Arabic Wing", category: "language", image: "photos/.jpg", email: "nahid@example.com", phone: "+91 1234567896", status: "online" },
+        ];
+
+        // DOM Elements
+        const membersGrid = document.getElementById('membersGrid');
+        const searchBar = document.querySelector('.search-bar');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // State
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentMembers = [];
+
+        // Initialize members page
+        function initMembers() {
+            renderMembers();
+            setupEventListeners();
+        }
+
+        // Render members based on filter and search
+        function renderMembers() {
+            currentMembers = membersData.filter(member => {
+                const matchesFilter = currentFilter === 'all' || member.category === currentFilter;
+                const matchesSearch = member.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                    member.role.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                    member.wing.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchesFilter && matchesSearch;
+            });
+
+            membersGrid.innerHTML = '';
+
+            if (currentMembers.length === 0) {
+                membersGrid.innerHTML = '<div class="no-results">No members found matching your criteria</div>';
+                return;
+            }
+
+            currentMembers.forEach(member => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'member-profile';
+                memberCard.innerHTML = `
+                    <img src="${member.image}" alt="${member.name}">
+                    <h3>${member.name}</h3>
+                    
+                   
+                    <div class="member-status ${member.status === 'online' ? '' : 'offline'}"></div>
+                `;
+                membersGrid.appendChild(memberCard);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search bar
+            searchBar.addEventListener('input', function() {
+                currentSearch = this.value;
+                renderMembers();
+            });
+
+            // Search icon
+            document.querySelector('.search-icon').addEventListener('click', function() {
+                searchBar.focus();
+            });
+
+            // Filter buttons
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderMembers();
+                });
+            });
+
+            // Keyboard support for search
+            searchBar.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    renderMembers();
+                }
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initMembers);
+    </script>
+</body>
+</html>

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Gallery - Ithihad Friends</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Additional Gallery-specific Styles */
+        .gallery-hero {
+            height: 60vh;
+            background: linear-gradient(135deg, #4a90e2, #ff6b6b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gallery-hero-content {
+            z-index: 2;
+            max-width: 800px;
+            padding: 20px;
+        }
+        
+        .gallery-hero h1 {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .gallery-search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .gallery-search {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+        }
+        
+        .gallery-search:focus {
+            outline: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a90e2;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .gallery-container {
+            padding: 60px 5%;
+            background: var(--dark-bg);
+        }
+        
+        body.light-mode .gallery-container {
+            background: var(--light-bg);
+        }
+        
+        .gallery-filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .filter-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            background: #2c2c2c;
+            color: #a0a0a0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        body.light-mode .filter-btn {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(45deg, #ff6b6b, #4a90e2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            aspect-ratio: 1 / 1;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            opacity: 0;
+        }
+        
+        .gallery-item:hover .gallery-item-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .gallery-item-title {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .gallery-item-date {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .gallery-item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .gallery-action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .lightbox.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .lightbox-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+        }
+        
+        .lightbox-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .lightbox-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .lightbox-caption {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #a0a0a0;
+        }
+        
+        body.light-mode .no-results {
+            color: #666;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(74, 144, 226, 0.2);
+            border-radius: 50%;
+            border-top-color: #4a90e2;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-search {
+                padding: 12px 45px 12px 15px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery-hero {
+                height: 50vh;
+            }
+            
+            .gallery-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .gallery-filters {
+                gap: 10px;
+            }
+            
+            .filter-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="wrrrrrrrrrrrrrrr.svg" alt="" style="width: 40px; height: auto;">
+        </div>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#committee">Core Committee</a></li>
+            <li><a href="index.html#events">Events & Programs</a></li>
+            <li><a href="gallery.html" class="active">Gallery</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+        <div class="overlay"></div>
+    </nav>
+
+    <!-- Gallery Hero Section -->
+    <section class="gallery-hero">
+        <div class="gallery-hero-content">
+            <h1>Our Gallery</h1>
+            <div class="gallery-search-container">
+                <input type="text" class="gallery-search" placeholder="Search photos...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Container -->
+    <section class="gallery-container">
+        <div class="gallery-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="events">Events</button>
+            <button class="filter-btn" data-filter="Members">members</button>
+            <button class="filter-btn" data-filter="outings">Outings</button>
+            <button class="filter-btn" data-filter="celebrations">Celebrations</button>
+        </div>
+        
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Gallery items will be loaded here -->
+            <div class="loading">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <span class="lightbox-close">&times;</span>
+            <img class="lightbox-img" src="" alt="">
+            <div class="lightbox-nav">
+                <button class="lightbox-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="lightbox-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Ithihad Friends - All rights reserved.</p>
+        <div class="social-links">
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Gallery data (in a real app, this would come from an API)
+        const galleryData = [
+            {
+                id: 1,
+                title: "ITHIHAD 4th Anniversary",
+                date: "...",
+                category: "celebrations",
+                image: "photos/anniversary.png"
+            },
+            {
+                id: 2,
+                title: "WHO AM I",
+                date: "3 May 2025",
+                category: "events",
+                image: "photos/who am i .jpg"
+            },
+            {
+                id: 3,
+                title: "IT Quiz",
+                date: "18 Apr 2025",
+                category: "events",
+                image: "photos/quiz.jpg"
+            },
+            {
+                id: 4,
+                title: "Springno",
+                date: "21 May 2025",
+                category: "events",
+                image: "photos/sss.png"
+            },
+            {
+                id: 5,
+                title: "Ithihad Podcast 1",
+                date: "5 May 2025",
+                category: "events",
+                image: "photos/Blue and Brown Modern Business Webinar Promotion Poster (1).png"
+            },
+            {
+                id: 2,
+                title: "Literature Fest",
+                date: "3 May 2025",
+                category: "festivals",
+                image: "photos/Literature Festival Poster Template - Made with PosterMyWall (1).jpg"
+            },
+            {
+                id: 7,
+                title: "Mountain Trip",
+                date: "7 Jul 2024",
+                category: "outings",
+                image: "https://source.unsplash.com/random/600x600/?mountain"
+            },
+            {
+                id: 8,
+                title: "Graduation Day",
+                date: "25 Aug 2024",
+                category: "celebrations",
+                image: "https://source.unsplash.com/random/600x600/?graduation"
+            },
+            {
+                id: 9,
+                title: "Workshop Session",
+                date: "12 Sep 2024",
+                category: "events",
+                image: "https://source.unsplash.com/random/600x600/?workshop"
+            },
+            {
+                id: 10,
+                title: "Planning Meeting",
+                date: "30 Oct 2024",
+                category: "meetings",
+                image: "https://source.unsplash.com/random/600x600/?meeting"
+            },
+            {
+                id: 11,
+                title: "Park Gathering",
+                date: "14 Nov 2024",
+                category: "outings",
+                image: "https://source.unsplash.com/random/600x600/?park"
+            },
+            {
+                id: 12,
+                title: "New Year Party",
+                date: "31 Dec 2024",
+                category: "celebrations",
+                image: "https://source.unsplash.com/random/600x600/?party"
+            }
+        ];
+
+        // DOM Elements
+        const galleryGrid = document.getElementById('galleryGrid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchInput = document.querySelector('.gallery-search');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.querySelector('.lightbox-img');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const closeBtn = document.querySelector('.lightbox-close');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        // Current state
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentItems = [];
+        let currentIndex = 0;
+
+        // Initialize gallery
+        function initGallery() {
+            renderGallery();
+            setupEventListeners();
+        }
+
+        // Render gallery based on current filter and search
+        function renderGallery() {
+            // Filter items
+            currentItems = galleryData.filter(item => {
+                const matchesFilter = currentFilter === 'all' || item.category === currentFilter;
+                const matchesSearch = item.title.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchesFilter && matchesSearch;
+            });
+            
+            // Clear gallery
+            galleryGrid.innerHTML = '';
+            
+            // Show no results message if empty
+            if (currentItems.length === 0) {
+                galleryGrid.innerHTML = '<div class="no-results">No photos found matching your criteria</div>';
+                return;
+            }
+            
+            // Render items
+            currentItems.forEach((item, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.dataset.category = item.category;
+                galleryItem.dataset.index = index;
+                
+                galleryItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}">
+                    <div class="gallery-item-overlay">
+                        <h3 class="gallery-item-title">${item.title}</h3>
+                        <p class="gallery-item-date">${item.date}</p>
+                        <div class="gallery-item-actions">
+                            <button class="gallery-action-btn" title="View">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="gallery-action-btn" title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="gallery-action-btn" title="Download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                galleryGrid.appendChild(galleryItem);
+            });
+            
+            // Add click event to each item
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // Don't open lightbox if clicking on action buttons
+                    if (e.target.closest('.gallery-action-btn')) {
+                        e.stopPropagation();
+                        return;
+                    }
+                    
+                    const index = parseInt(this.dataset.index);
+                    openLightbox(index);
+                });
+            });
+            
+            // Add click events to action buttons
+            document.querySelectorAll('.gallery-action-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const action = this.querySelector('i').className.split(' ')[1];
+                    const itemIndex = parseInt(this.closest('.gallery-item').dataset.index);
+                    const item = currentItems[itemIndex];
+                    
+                    switch(action) {
+                        case 'fa-expand':
+                            openLightbox(itemIndex);
+                            break;
+                        case 'fa-share-alt':
+                            shareItem(item);
+                            break;
+                        case 'fa-download':
+                            downloadItem(item);
+                            break;
+                    }
+                });
+            });
+        }
+
+        // Open lightbox with specific image
+        function openLightbox(index) {
+            currentIndex = index;
+            const item = currentItems[index];
+            
+            lightboxImg.src = item.image;
+            lightboxImg.alt = item.title;
+            lightboxCaption.textContent = `${item.title} - ${item.date}`;
+            
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close lightbox
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Navigate to previous image
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
+            openLightbox(currentIndex);
+        }
+
+        // Navigate to next image
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % currentItems.length;
+            openLightbox(currentIndex);
+        }
+
+        // Share item
+        function shareItem(item) {
+            if (navigator.share) {
+                navigator.share({
+                    title: item.title,
+                    text: `Check out this photo from ${item.date}`,
+                    url: item.image
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                alert('Share functionality is not available in your browser. Copy this link: ' + item.image);
+            }
+        }
+
+        // Download item
+        function downloadItem(item) {
+            const link = document.createElement('a');
+            link.href = item.image;
+            link.download = `${item.title.replace(/\s+/g, '_')}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter buttons
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderGallery();
+                });
+            });
+            
+            // Search input
+            searchInput.addEventListener('input', function() {
+                currentSearch = this.value;
+                renderGallery();
+            });
+            
+            // Search icon
+            document.querySelector('.search-icon').addEventListener('click', function() {
+                searchInput.focus();
+            });
+            
+            // Lightbox controls
+            closeBtn.addEventListener('click', closeLightbox);
+            prevBtn.addEventListener('click', prevImage);
+            nextBtn.addEventListener('click', nextImage);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        closeLightbox();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevImage();
+                    } else if (e.key === 'ArrowRight') {
+                        nextImage();
+                    }
+                }
+            });
+            
+            // Click outside lightbox to close
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+        }
+
+        // Initialize the gallery when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initGallery);
+    </script>
+</body>
+</html>
