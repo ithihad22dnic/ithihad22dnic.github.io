@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://ithihad22dnic.github.io/</loc>
+    <priority>1.0</priority>
+  </url>
+  <!-- Add more URLs if you have multiple pages -->
+  <!-- Example:
+  <url>
+    <loc>https://ithihad22dnic.github.io/about.html</loc>
+    <priority>0.8</priority>
+  </url>
+  -->
+</urlset>
